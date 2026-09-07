@@ -1,0 +1,549 @@
+/* ==========================================================
+   رموز التصميم (Design tokens)
+   هوية "دفتر الأستاذ": حبر أخضر داكن للعلامة، أحمر حبر للأخطاء،
+   ذهبي للتنبيه، فوق خلفية ورقية باردة. خط Kufi للعناوين، Plex
+   Sans Arabic للنصوص، وPlex Mono لكل بيانات رقمية/جدولية —
+   إشارة إلى دقة الأرقام في أداة تدقيق أسعار.
+   ========================================================== */
+:root {
+  --color-paper: #edf1ef;
+  --color-surface: #ffffff;
+  --color-line: #d6ded9;
+
+  --color-ink: #1c2422;
+  --color-ink-soft: #58655f;
+  --color-ink-faint: #8d9994;
+
+  --color-stamp: #0f5c50;
+  --color-stamp-dark: #0b453c;
+  --color-stamp-bg: #e3efec;
+
+  --color-red: #9a3324;
+  --color-red-bright: #e8674b;
+  --color-red-bg: #f7e9e4;
+
+  --color-gold: #93650e;
+  --color-gold-bg: #f5ebd6;
+
+  --color-green: #3f7856;
+  --color-green-bg: #e8f2ec;
+
+  --font-display: "Noto Kufi Arabic", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", "Courier New", Consolas, monospace;
+
+  --radius-control: 6px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 48px 24px 64px;
+}
+
+/* ==========================================================
+   الترويسة
+   ========================================================== */
+.app-header {
+  position: relative;
+  padding-bottom: 26px;
+  margin-bottom: 40px;
+}
+
+.app-header::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 4px;
+  border-top: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-ink);
+}
+
+.app-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--color-stamp);
+}
+
+.app-eyebrow::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: var(--color-stamp);
+}
+
+.app-header h1 {
+  margin: 0 0 12px;
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--color-ink);
+}
+
+.app-subtitle {
+  margin: 0;
+  max-width: 56ch;
+  color: var(--color-ink-soft);
+  font-size: 15px;
+}
+
+/* ==========================================================
+   تبويبات إدخال البيانات (TXT / CSV / لصق نص)
+   ========================================================== */
+.input-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.input-tab {
+  appearance: none;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  margin-inline-end: 22px;
+  padding: 10px 2px;
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--color-ink-soft);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.input-tab:hover {
+  color: var(--color-ink);
+}
+
+.input-tab.active {
+  color: var(--color-ink);
+  border-bottom-color: var(--color-stamp);
+  font-weight: 700;
+}
+
+.input-panel[hidden] {
+  display: none;
+}
+
+/* ==========================================================
+   منطقة رفع الملفات (TXT / CSV)
+   ========================================================== */
+.upload-card {
+  background: var(--color-surface);
+  border: 1.5px dashed var(--color-line);
+  border-radius: var(--radius-control);
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.upload-card:hover,
+.upload-card:focus-visible {
+  border-color: var(--color-stamp);
+  background: var(--color-stamp-bg);
+}
+
+.upload-card.drag-over {
+  border-color: var(--color-stamp);
+  background: var(--color-stamp-bg);
+}
+
+.upload-icon {
+  font-size: 26px;
+  color: var(--color-stamp);
+  margin-bottom: 10px;
+}
+
+.upload-title {
+  margin: 0 0 6px;
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.upload-hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-ink-soft);
+}
+
+/* ==========================================================
+   لصق نص مباشرة
+   ========================================================== */
+.paste-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: var(--color-ink-soft);
+}
+
+.paste-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 220px;
+  resize: vertical;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  direction: ltr;
+  text-align: left;
+  padding: 14px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+.paste-textarea:focus {
+  outline: none;
+  border-color: var(--color-stamp);
+}
+
+.paste-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.paste-hint {
+  font-size: 12.5px;
+  color: var(--color-ink-faint);
+  font-family: var(--font-mono);
+}
+
+/* ==========================================================
+   خيار تقليم CSV / مفاتيح تجاهل الأخطاء
+   ========================================================== */
+.csv-trim-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.csv-trim-toggle,
+.outlet-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--color-ink-soft);
+}
+
+.outlet-toggle {
+  margin-bottom: 10px;
+}
+
+.csv-trim-toggle input,
+.outlet-toggle input {
+  accent-color: var(--color-stamp);
+  width: 15px;
+  height: 15px;
+}
+
+/* ==========================================================
+   الأزرار وصف الحالة
+   ========================================================== */
+.actions-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin: 20px 0 40px;
+}
+
+.btn-primary {
+  background: var(--color-stamp);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-control);
+  padding: 12px 28px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-stamp-dark);
+}
+
+.btn-primary:disabled {
+  background: #b7c0bc;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius-control);
+  padding: 11px 22px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--color-paper);
+}
+
+.btn-secondary:disabled {
+  border-color: #c7cdca;
+  color: #9aa3a0;
+  cursor: not-allowed;
+  background: transparent;
+}
+
+.status-message {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  color: var(--color-ink-soft);
+}
+
+.status-message.status-info {
+  color: var(--color-stamp);
+}
+
+.status-message.status-success {
+  color: var(--color-green);
+}
+
+.status-message.status-warning {
+  color: var(--color-gold);
+}
+
+.status-message.status-error {
+  color: var(--color-red);
+  font-weight: 700;
+}
+
+/* ==========================================================
+   شريط الملخص — عارضة أرقام داكنة على طراز إجمالي الفاتورة،
+   موضع الجرأة الوحيد في التصميم
+   ========================================================== */
+.summary-grid {
+  display: flex;
+  flex-wrap: wrap;
+  background: var(--color-ink);
+  margin: 0 0 44px;
+}
+
+.stat-card {
+  flex: 1 1 130px;
+  padding: 20px 18px;
+  border-inline-end: 1px solid rgba(255, 255, 255, 0.14);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stat-card:last-child {
+  border-inline-end: none;
+}
+
+.stat-value {
+  font-family: var(--font-mono);
+  font-size: 26px;
+  font-weight: 600;
+  color: #fff;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.stat-label {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.stat-card.stat-card-muted .stat-value {
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 500;
+}
+
+.stat-card.stat-card-danger .stat-value {
+  color: var(--color-red-bright);
+}
+
+/* ==========================================================
+   جدول الأخطاء
+   ========================================================== */
+.errors-section h2 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin: 0 0 16px;
+}
+
+.errors-empty-state {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-control);
+  padding: 26px;
+  text-align: center;
+  color: var(--color-ink-soft);
+  font-size: 14px;
+}
+
+.table-scroll {
+  width: 96vw;
+  margin-inline: calc(50% - 48vw);
+
+  overflow-x: auto;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  min-width: 900px;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  background: var(--color-ink);
+  color: #fff;
+  font-weight: 600;
+  padding: 11px 12px;
+  white-space: nowrap;
+}
+
+tbody td {
+  padding: 10px 12px;
+  border-top: 1px solid var(--color-line);
+  white-space: nowrap;
+  text-align: center;
+}
+
+tbody tr:nth-child(even) {
+  background: var(--color-paper);
+}
+
+tbody tr:nth-child(odd) {
+  background: #fff;
+}
+
+tbody tr:hover {
+  background: var(--color-stamp-bg);
+}
+
+td.cell-numeric {
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: end;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* عمود "الفرق" (العاشر) هو صلب القضية في هذا الجدول — يبرز بحبر أحمر */
+tbody td:nth-child(10) {
+  color: var(--color-red);
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+/* ==========================================================
+   التذييل
+   ========================================================== */
+.app-footer {
+  margin-top: 48px;
+  padding-top: 18px;
+  border-top: 1px solid var(--color-line);
+}
+
+.app-footer p {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--color-ink-faint);
+}
+
+/* ==========================================================
+   إتاحة الوصول والاستجابة
+   ========================================================== */
+:focus-visible {
+  outline: 2px solid var(--color-stamp);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .page {
+    padding: 32px 16px 48px;
+  }
+
+  .app-header h1 {
+    font-size: 26px;
+  }
+
+  .upload-card {
+    padding: 28px 14px;
+  }
+
+  .actions-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+  }
+
+  .summary-grid {
+    flex-direction: column;
+  }
+
+  .stat-card {
+    border-inline-end: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  }
+
+  .stat-card:last-child {
+    border-bottom: none;
+  }
+}

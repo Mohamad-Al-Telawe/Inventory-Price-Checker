@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>مدقّق أسعار حركات المخزون</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;700;900&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+  <div class="page">
+    <header class="app-header">
+      <p class="app-eyebrow">أداة كشف أخطاء التسعير</p>
+      <h1>مدقّق أسعار حركات المخزون</h1>
+      <p class="app-subtitle">
+        يقارن سعر كل حركة إخراج بمتوسط التكلفة المرجّح للمخزون لحظة حدوثها، حركة
+        بحركة، ويكشف أي اختلاف فورًا.
+      </p>
+    </header>
+
+    <main>
+      <div class="input-tabs" role="tablist" aria-label="طريقة إدخال البيانات">
+        <button type="button" class="input-tab active" data-mode="txt" role="tab" aria-selected="true">ملف TXT</button>
+        <button type="button" class="input-tab" data-mode="csv" role="tab" aria-selected="false">ملف CSV</button>
+        <button type="button" class="input-tab" data-mode="paste" role="tab" aria-selected="false">لصق نص
+          مباشرة</button>
+      </div>
+
+      <!-- TXT: نفس منطقة السحب والإفلات الأصلية، بدون أي تعديل -->
+      <div class="input-panel" id="panelTxt" data-panel="txt">
+        <section class="upload-card" id="dropZone" tabindex="0" role="button" aria-label="اختيار أو سحب ملف الحركات">
+          <input type="file" id="fileInput" accept=".txt" hidden />
+          <div class="upload-icon" aria-hidden="true">⇪</div>
+          <p class="upload-title">اسحب ملف الحركات (TXT) هنا، أو اضغط للاختيار</p>
+          <p class="upload-hint" id="selectedFileName">لم يتم اختيار ملف بعد</p>
+        </section>
+      </div>
+
+      <!-- CSV: نفس نمط منطقة TXT (سحب/إفلات أو ضغط)، مع قبول .csv فقط -->
+      <div class="input-panel" id="panelCsv" data-panel="csv" hidden>
+        <section class="upload-card" id="dropZoneCsv" tabindex="0" role="button" aria-label="اختيار أو سحب ملف CSV">
+          <input type="file" id="csvFileInput" accept=".csv" hidden />
+          <div class="upload-icon" aria-hidden="true">⇪</div>
+          <p class="upload-title">اسحب ملف الحركات (CSV) هنا، أو اضغط للاختيار</p>
+          <p class="upload-hint" id="selectedCsvFileName">لم يتم اختيار ملف بعد</p>
+        </section>
+      </div>
+
+      <!-- لصق نص: خانة نصية مباشرة، بديل عن اختيار ملف -->
+      <div class="input-panel" id="panelPaste" data-panel="paste" hidden>
+        <label class="paste-label" for="pastedTextInput">
+          الصق هنا بيانات الحركات مباشرة (تُقبل بيانات مفصولة بفواصل مثل CSV أو بمسافات Tab كما تُنسخ من إكسل)
+        </label>
+        <textarea id="pastedTextInput" class="paste-textarea" rows="12" placeholder="الصق هنا نص الحركات..."></textarea>
+        <div class="paste-actions">
+          <button type="button" id="clearPasteButton" class="btn-secondary">مسح النص</button>
+          <span id="pasteCharCount" class="paste-hint"></span>
+        </div>
+      </div>
+
+      <div class="csv-trim-row">
+        <label class="csv-trim-toggle" for="trimCsvToggle">
+          <input type="checkbox" id="trimCsvToggle" />
+          تقليم ملف CSV قبل التحليل (إزالة العمود A والسطر الأول)
+        </label>
+      </div>
+
+      <div class="actions-row">
+        <button id="analyzeButton" class="btn-primary" disabled>بدء التحليل</button>
+        <button id="exportXlsxButton" class="btn-secondary" disabled>تصدير النتائج كملف Excel (xlsx)</button>
+        <p id="statusMessage" class="status-message" role="status" aria-live="polite"></p>
+      </div>
+
+      <section class="summary-grid" id="summarySection" hidden aria-label="ملخص التحليل">
+        <div class="stat-card">
+          <span class="stat-value" id="statTotalRecords">0</span>
+          <span class="stat-label">إجمالي السجلات</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="statGroups">0</span>
+          <span class="stat-label">مجموعات المخزون</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="statOutputsChecked">0</span>
+          <span class="stat-label">حركات الإخراج المفحوصة</span>
+        </div>
+        <div class="stat-card" id="statErrorsCard">
+          <span class="stat-value" id="statErrors">0</span>
+          <span class="stat-label">الأخطاء المكتشفة</span>
+        </div>
+        <div class="stat-card stat-card-muted">
+          <span class="stat-value" id="statIgnoredForReporting">0</span>
+          <span class="stat-label">إخراجات مستثناة من التقرير</span>
+        </div>
+        <div class="stat-card stat-card-muted">
+          <span class="stat-value" id="statSkippedLines">0</span>
+          <span class="stat-label">أسطر متجاهَلة عند القراءة</span>
+        </div>
+      </section>
+
+      <section class="errors-section">
+        <h2>الأخطاء المكتشفة</h2>
+        <label class="outlet-toggle">
+          <input type="checkbox" id="ignoreOutletErrorsToggle" checked />
+          تجاهل أخطاء الأوتليت (السعر المتوقع أكبر من 10 وكمية الإخراج = 10)
+        </label>
+        <label class="outlet-toggle">
+          <input type="checkbox" id="ignoreCurrentPriceErrorsToggle" checked />
+          تجاهل الأخطاء ذات الفرق الصغير (بين -0.01 و 0.01) عندما يطابق السعر الفعلي عمود "السعر الحالي"
+        </label>
+        <p class="errors-empty-state" id="errorsEmptyState">
+          قم برفع ملف واضغط "بدء التحليل" لعرض النتائج.
+        </p>
+        <div class="table-scroll">
+          <table id="errorsTable" hidden>
+            <thead>
+              <tr>
+                <th>رقم الفاتورة</th>
+                <th>نوع الفاتورة</th>
+                <th>التاريخ</th>
+                <th>الفرع</th>
+                <th>المستودع</th>
+                <th>كود الصنف</th>
+                <th>كمية الإخراج</th>
+                <th>السعر الفعلي</th>
+                <th>السعر المتوقع</th>
+                <th>الفرق</th>
+                <th>اللون</th>
+                <th>المقاس</th>
+              </tr>
+            </thead>
+            <tbody id="errorsTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>
+        تفاصيل كل خطوة من الحساب (التجميع، المتوسط المرجّح، المقارنة) مسجّلة في
+        Console المتصفح (F12) لتسهيل تتبّع أي فرق في السعر حتى مصدره.
+      </p>
+    </footer>
+  </div>
+
+  <!-- Plain <script> tags on purpose (no bundler/build step, no ES-module
+       CORS issues when the file is opened directly from disk). Each file
+       attaches its piece to a shared `App` namespace object. Load order
+       matters: config/utils first, app.js last. -->
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script> -->
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/parser.js"></script>
+  <script src="js/inventory.js"></script>
+  <script src="js/analyzer.js"></script>
+  <script src="js/reporter.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>
