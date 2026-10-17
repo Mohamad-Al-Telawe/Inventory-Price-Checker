@@ -242,7 +242,32 @@
   // lines, then split each line by comma", because a quoted field is
   // allowed to contain an embedded newline — splitting into lines first
   // would incorrectly cut such a field in half.
+
+  function detectCSVDelimiter(text) {
+    const counts = { ',': 0, ';': 0, '\t': 0 };
+    let inQuotes = false;
+    let seenContent = false;
+
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (ch === '"') { inQuotes = !inQuotes; seenContent = true; continue; }
+      if (!inQuotes && (ch === '\n' || ch === '\r')) {
+        if (seenContent) break;
+        continue;
+      }
+      if (!inQuotes && counts[ch] !== undefined) counts[ch] += 1;
+      if (ch !== ',' && ch !== ';' && ch !== '\t') seenContent = true;
+    }
+
+    let best = ',';
+    [',', ';', '\t'].forEach((c) => { if (counts[c] > counts[best]) best = c; });
+    return best;
+  }
+
+
   function parseCSVRows(text) {
+    if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1); // إزالة BOM
+    const delimiter = detectCSVDelimiter(text);
     const rows = [];
     let row = [];
     let field = '';
@@ -275,7 +300,7 @@
         continue;
       }
 
-      if (char === ',') {
+      if (char === delimiter) {
         row.push(field);
         field = '';
         i += 1;

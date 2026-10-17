@@ -18,7 +18,7 @@
   // to the console. Flip to false to silence verbose logging without
   // touching any other file. Warnings/errors (console.warn/console.error)
   // always print regardless of DEBUG, since they flag real data problems.
-  Config.DEBUG = true;
+  Config.DEBUG = false;
 
   // ---- Invoice types ignored ONLY for error reporting --------------
   // A type listed here still fully affects inventory quantity/cost
